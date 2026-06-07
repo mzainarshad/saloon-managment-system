@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://pos.orangelogs.com/api',
+  apiUrl: 'https://saloon-managment-system-nixpackspythonversion311.up.railway.app'
 };
