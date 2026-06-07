@@ -1,0 +1,97 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">{{ isEdit ? 'Edit User' : 'New User' }}</h1>
+      <p class="page-subtitle">{{ isEdit ? 'Update user details and permissions' : 'Create a new user account' }}</p>
+    </div>
+    <a routerLink="/users" class="btn btn-outline">← Back to Users</a>
+  </div>
+
+  <div *ngIf="loading" class="loading-state">Loading...</div>
+
+  <div *ngIf="!loading" class="form-card">
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label class="form-label">First Name <span class="required">*</span></label>
+          <input class="form-control" formControlName="first_name" placeholder="Sara">
+          <div class="form-error" *ngIf="form.get('first_name')?.invalid && form.get('first_name')?.touched">
+            Required.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Last Name <span class="required">*</span></label>
+          <input class="form-control" formControlName="last_name" placeholder="Khan">
+          <div class="form-error" *ngIf="form.get('last_name')?.invalid && form.get('last_name')?.touched">
+            Required.
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label">Email <span class="required">*</span></label>
+          <input class="form-control" formControlName="email" type="email" placeholder="sara@company.com">
+          <div class="form-error" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+            A valid email is required.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Role <span class="required">*</span></label>
+          <select class="form-control" formControlName="role">
+            <option *ngFor="let r of availableRoles" [value]="r.value">{{ r.label }}</option>
+          </select>
+        </div>
+
+        <!-- Company selector — only visible to super admin -->
+        <div class="form-group" *ngIf="auth.isSuperAdmin">
+          <label class="form-label">Company <span class="required">*</span></label>
+          <select class="form-control" formControlName="company">
+            <option [ngValue]="null">— No Company (Super Admin) —</option>
+            <option *ngFor="let c of companies" [ngValue]="c.id">{{ c.name }}</option>
+          </select>
+          <div class="form-hint">Leave blank only for Super Admin users.</div>
+          <div class="form-error" *ngIf="form.get('company')?.invalid && form.get('company')?.touched">
+            Please select a company.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-control" formControlName="is_active">
+            <option [ngValue]="true">Active</option>
+            <option [ngValue]="false">Inactive</option>
+          </select>
+        </div>
+
+        <!-- Password fields — only for create -->
+        <ng-container *ngIf="!isEdit">
+          <div class="form-group">
+            <label class="form-label">Password <span class="required">*</span></label>
+            <input class="form-control" formControlName="password" type="password" placeholder="Min 6 characters">
+            <div class="form-error" *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
+              Password must be at least 6 characters.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Confirm Password <span class="required">*</span></label>
+            <input class="form-control" formControlName="password2" type="password" placeholder="Repeat password">
+            <div class="form-error" *ngIf="form.get('password2')?.invalid && form.get('password2')?.touched">
+              Please confirm password.
+            </div>
+          </div>
+        </ng-container>
+
+      </div>
+
+      <div class="form-actions">
+        <a routerLink="/users" class="btn btn-outline">Cancel</a>
+        <button type="submit" class="btn btn-primary" [disabled]="saving">
+          {{ saving ? 'Saving...' : (isEdit ? 'Update User' : 'Create User') }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

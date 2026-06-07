@@ -15,8 +15,10 @@ class AuditLogMiddleware:
                 payload = json.loads(request.body) if request.body else None
             except Exception:
                 payload = None
+            user = request.user if request.user.is_authenticated else None
             AuditLog.objects.create(
-                user=request.user if request.user.is_authenticated else None,
+                user=user,
+                company=user.company if user else None,
                 method=request.method,
                 endpoint=request.path,
                 payload=payload,

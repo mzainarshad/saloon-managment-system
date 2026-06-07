@@ -1,0 +1,71 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">{{ isEdit ? 'Edit Company' : 'New Company' }}</h1>
+      <p class="page-subtitle">{{ isEdit ? 'Update company details' : 'Create a new tenant company' }}</p>
+    </div>
+    <a routerLink="/companies" class="btn btn-outline">
+      ← Back to Companies
+    </a>
+  </div>
+
+  <div *ngIf="loading" class="loading-state">Loading...</div>
+
+  <div *ngIf="!loading" class="form-card">
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label class="form-label">Company Name <span class="required">*</span></label>
+          <input class="form-control" formControlName="name" placeholder="e.g. Glamour Salon">
+          <div class="form-error" *ngIf="form.get('name')?.invalid && form.get('name')?.touched">
+            Name is required.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Slug <span class="required">*</span></label>
+          <input class="form-control" formControlName="slug" placeholder="glamour-salon">
+          <div class="form-hint">URL-friendly identifier. Auto-generated from name.</div>
+          <div class="form-error" *ngIf="form.get('slug')?.invalid && form.get('slug')?.touched">
+            Slug is required and must be lowercase letters, numbers, and hyphens only.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-control" formControlName="email" type="email" placeholder="info@glamoursalon.com">
+          <div class="form-error" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+            Enter a valid email.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input class="form-control" formControlName="phone" placeholder="+92 300 0000000">
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label">Address</label>
+          <textarea class="form-control" formControlName="address" rows="2" placeholder="Full address..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-control" formControlName="is_active">
+            <option [ngValue]="true">Active</option>
+            <option [ngValue]="false">Inactive</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <a routerLink="/companies" class="btn btn-outline">Cancel</a>
+        <button type="submit" class="btn btn-primary" [disabled]="saving">
+          {{ saving ? 'Saving...' : (isEdit ? 'Update Company' : 'Create Company') }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -16,6 +16,7 @@ class Sale(models.Model):
         REFUNDED = 'refunded', 'Refunded'
         VOIDED = 'voided', 'Voided'
 
+    company = models.ForeignKey('companies.Company', on_delete=models.CASCADE, related_name='sales')
     client = models.ForeignKey('customers.Client', on_delete=models.SET_NULL, null=True, related_name='sales')
     staff = models.ForeignKey('staff.StaffProfile', on_delete=models.SET_NULL, null=True, related_name='sales')
     appointment = models.OneToOneField('appointments.Appointment', null=True, blank=True, on_delete=models.SET_NULL, related_name='sale')
@@ -49,7 +50,7 @@ class SaleItem(models.Model):
     sale = models.ForeignKey(Sale, on_delete=models.CASCADE, related_name='items')
     item_type = models.CharField(max_length=20, choices=ItemType.choices)
     item_id = models.PositiveIntegerField()
-    item_name = models.CharField(max_length=200)  # snapshot at sale time
+    item_name = models.CharField(max_length=200)
     quantity = models.PositiveIntegerField(default=1)
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)

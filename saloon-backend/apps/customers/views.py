@@ -2,11 +2,12 @@ from rest_framework import generics, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from apps.common.mixins import TenantQuerySetMixin
 from .models import Client, ClientNote, LoyaltyTransaction
 from .serializers import ClientSerializer, ClientDetailSerializer, ClientNoteSerializer, LoyaltyTransactionSerializer
 
 
-class ClientViewSet(ModelViewSet):
+class ClientViewSet(TenantQuerySetMixin, ModelViewSet):
     queryset = Client.objects.all()
     search_fields = ['name', 'phone', 'email', 'tags']
     ordering_fields = ['name', 'created_at', 'loyalty_points']
@@ -30,8 +31,13 @@ class ClientViewSet(ModelViewSet):
 
 
 class ClientNoteViewSet(ModelViewSet):
-    queryset = ClientNote.objects.all()
     serializer_class = ClientNoteSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_super_admin:
+            return ClientNote.objects.all()
+        return ClientNote.objects.filter(client__company=user.company)
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)

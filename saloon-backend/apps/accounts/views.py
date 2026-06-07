@@ -6,9 +6,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
 from .serializers import (
     UserSerializer, RegisterSerializer,
-    CustomTokenObtainPairSerializer, ChangePasswordSerializer
+    CustomTokenObtainPairSerializer, ChangePasswordSerializer,
 )
-from .permissions import IsAdmin
+from .permissions import IsAdmin, IsSuperAdmin
 
 
 class LoginView(TokenObtainPairView):
@@ -17,9 +17,11 @@ class LoginView(TokenObtainPairView):
 
 
 class RegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [IsAdmin]
+
+    def get_queryset(self):
+        return User.objects.all()
 
 
 class LogoutView(APIView):
@@ -50,12 +52,23 @@ class ChangePasswordView(APIView):
 
 
 class UserListView(generics.ListAPIView):
-    queryset = User.objects.all().order_by('first_name')
     serializer_class = UserSerializer
     permission_classes = [IsAdmin]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_super_admin:
+            return User.objects.all().order_by('first_name')
+        # Company admin sees only their own company's users
+        return User.objects.filter(company=user.company).order_by('first_name')
 
 
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAdmin]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_super_admin:
+            return User.objects.all()
+        return User.objects.filter(company=user.company)

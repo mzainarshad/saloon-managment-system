@@ -14,11 +14,20 @@
       </button>
     </div>
 
+    <!-- Company context pill -->
+    <div class="company-context" *ngIf="sidebarOpen">
+      <mat-icon class="company-icon">{{ auth.isSuperAdmin ? 'admin_panel_settings' : 'business' }}</mat-icon>
+      <span class="company-label">{{ auth.isSuperAdmin ? 'All Companies' : auth.companyName }}</span>
+    </div>
+
     <nav class="sidebar-nav">
       <ng-container *ngFor="let item of navItems">
         <!-- Simple item -->
         <a *ngIf="item.route && !item.children" [routerLink]="item.route"
-           class="nav-item" [class.active]="isActive(item)" (click)="mobileOpen=false">
+           class="nav-item" [class.active]="isActive(item)"
+           [class.nav-item-admin]="item.adminOnly"
+           [class.nav-item-super]="item.superAdminOnly"
+           (click)="mobileOpen=false">
           <mat-icon class="nav-icon">{{item.icon}}</mat-icon>
           <span class="nav-label" *ngIf="sidebarOpen">{{item.label}}</span>
         </a>
@@ -45,10 +54,12 @@
 
     <div class="sidebar-footer" *ngIf="sidebarOpen">
       <div class="user-info">
-        <div class="user-avatar">{{getInitials(currentUser)}}</div>
+        <div class="user-avatar" [class.super-avatar]="auth.isSuperAdmin">{{getInitials(currentUser)}}</div>
         <div class="user-details">
           <div class="user-name">{{currentUser?.first_name}} {{currentUser?.last_name}}</div>
-          <div class="user-role">{{currentUser?.role | titlecase}}</div>
+          <div class="user-role" [class.super-role]="auth.isSuperAdmin">
+            {{currentUser?.role === 'super_admin' ? 'Super Admin' : (currentUser?.role | titlecase)}}
+          </div>
         </div>
       </div>
       <button class="logout-btn" (click)="logout()">
@@ -65,12 +76,16 @@
         <button class="menu-btn" (click)="mobileOpen=true">
           <mat-icon>menu</mat-icon>
         </button>
-        <h2 class="branch-name">JohnTownBranch</h2>
+        <div class="header-branch">
+          <mat-icon class="branch-icon">{{ auth.isSuperAdmin ? 'admin_panel_settings' : 'store' }}</mat-icon>
+          <h2 class="branch-name">{{ headerTitle }}</h2>
+        </div>
       </div>
       <div class="header-right">
         <div class="online-badge"><span class="online-dot"></span> Online</div>
         <button class="icon-btn"><mat-icon>notifications_none</mat-icon></button>
-        <div class="header-avatar" [routerLink]="'/settings'">{{getInitials(currentUser)}}</div>
+        <div class="header-avatar" [class.super-avatar]="auth.isSuperAdmin"
+             [routerLink]="'/settings'">{{getInitials(currentUser)}}</div>
       </div>
     </header>
 

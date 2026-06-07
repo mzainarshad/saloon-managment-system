@@ -1,11 +1,26 @@
+export interface Company {
+  id: number;
+  name: string;
+  slug: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  is_active: boolean;
+  created_at: string;
+  user_count?: number;
+}
+
 export interface User {
   id: number;
   email: string;
   first_name: string;
   last_name: string;
   full_name: string;
-  role: 'admin' | 'manager' | 'stylist' | 'receptionist' | 'cashier';
+  role: 'super_admin' | 'admin' | 'manager' | 'stylist' | 'receptionist' | 'cashier';
   is_active: boolean;
+  company: number | null;
+  company_name?: string;
+  is_super_admin?: boolean;
 }
 
 export interface AuthTokens {

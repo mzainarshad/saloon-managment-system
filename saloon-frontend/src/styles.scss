@@ -56,6 +56,12 @@ h3 { font-size: 16px; font-weight: 600; }
 .badge-info { background: #dbeafe; color: #1d4ed8; }
 .badge-neutral { background: var(--color-surface-2); color: var(--color-text-muted); }
 .badge-purple { background: #ede9fe; color: #7c3aed; }
+.badge-primary { background: #dbeafe; color: #1d4ed8; }
+.badge-blue { background: #e0f2fe; color: #0369a1; }
+.badge-teal { background: #ccfbf1; color: #0f766e; }
+.badge-orange { background: #ffedd5; color: #c2410c; }
+.badge-gray { background: #f3f4f6; color: #4b5563; }
+.badge-muted { background: var(--color-surface-2); color: var(--color-text-muted); }
 
 /* Tables */
 .data-table { width: 100%; border-collapse: collapse; }

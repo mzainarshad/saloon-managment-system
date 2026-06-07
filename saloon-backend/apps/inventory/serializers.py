@@ -6,12 +6,14 @@ class SupplierSerializer(serializers.ModelSerializer):
     class Meta:
         model = Supplier
         fields = '__all__'
+        read_only_fields = ['company']
 
 
 class ProductCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductCategory
         fields = '__all__'
+        read_only_fields = ['company']
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -21,6 +23,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+        read_only_fields = ['company']
 
 
 class StockMovementSerializer(serializers.ModelSerializer):
@@ -49,4 +52,4 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = PurchaseOrder
         fields = '__all__'
-        read_only_fields = ['created_by', 'received_at']
+        read_only_fields = ['created_by', 'received_at', 'company']

@@ -2,12 +2,13 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.utils import timezone
+from apps.common.mixins import TenantQuerySetMixin
 from .models import StaffProfile, WorkSchedule, Attendance
 from .serializers import StaffProfileSerializer, WorkScheduleSerializer, AttendanceSerializer
 from apps.accounts.permissions import IsAdminOrManager
 
 
-class StaffViewSet(viewsets.ModelViewSet):
+class StaffViewSet(TenantQuerySetMixin, viewsets.ModelViewSet):
     queryset = StaffProfile.objects.select_related('user').prefetch_related('schedules')
     serializer_class = StaffProfileSerializer
     search_fields = ['user__first_name', 'user__last_name', 'specialisations']
@@ -18,7 +19,6 @@ class StaffViewSet(viewsets.ModelViewSet):
         if request.method == 'GET':
             schedules = WorkSchedule.objects.filter(staff=staff)
             return Response(WorkScheduleSerializer(schedules, many=True).data)
-        # PUT: replace whole schedule
         WorkSchedule.objects.filter(staff=staff).delete()
         for item in request.data:
             item['staff'] = staff.id

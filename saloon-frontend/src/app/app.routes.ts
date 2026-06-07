@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, guestGuard } from './core/guards/auth.guard';
+import { authGuard, guestGuard, superAdminGuard, adminGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -23,6 +23,18 @@ export const routes: Routes = [
       { path: 'reports', loadChildren: () => import('./modules/reports/reports.routes').then(m => m.REPORT_ROUTES) },
       { path: 'marketing', loadComponent: () => import('./modules/marketing/marketing.component').then(m => m.MarketingComponent) },
       { path: 'settings', loadComponent: () => import('./modules/settings/settings.component').then(m => m.SettingsComponent) },
+      // Super Admin only
+      {
+        path: 'companies',
+        canActivate: [superAdminGuard],
+        loadChildren: () => import('./modules/companies/companies.routes').then(m => m.COMPANY_ROUTES),
+      },
+      // Super Admin + Company Admin
+      {
+        path: 'users',
+        canActivate: [adminGuard],
+        loadChildren: () => import('./modules/users/users.routes').then(m => m.USER_ROUTES),
+      },
     ],
   },
   { path: '**', redirectTo: '/dashboard' },

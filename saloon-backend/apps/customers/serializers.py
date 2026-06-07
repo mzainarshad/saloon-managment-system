@@ -24,7 +24,7 @@ class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
         fields = '__all__'
-        read_only_fields = ['loyalty_points', 'created_at', 'updated_at']
+        read_only_fields = ['loyalty_points', 'created_at', 'updated_at', 'company']
 
     def get_total_visits(self, obj):
         return obj.appointments.filter(status='completed').count()

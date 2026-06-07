@@ -9,8 +9,9 @@ class Client(models.Model):
         OTHER = 'other', 'Other'
         PREFER_NOT_TO_SAY = 'prefer_not_to_say', 'Prefer not to say'
 
+    company = models.ForeignKey('companies.Company', on_delete=models.CASCADE, related_name='clients')
     name = models.CharField(max_length=200)
-    phone = models.CharField(max_length=20, unique=True)
+    phone = models.CharField(max_length=20)
     email = models.EmailField(blank=True, null=True)
     dob = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=20, choices=Gender.choices, blank=True)
@@ -24,6 +25,8 @@ class Client(models.Model):
     class Meta:
         db_table = 'clients'
         ordering = ['name']
+        # phone unique per company (not globally)
+        unique_together = [('company', 'phone')]
 
     def __str__(self):
         return f'{self.name} ({self.phone})'
@@ -38,7 +41,7 @@ class ClientNote(models.Model):
 
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='client_notes')
     note_type = models.CharField(max_length=20, choices=NoteType.choices, default=NoteType.GENERAL)
-    content = models.JSONField()  # rich text stored as JSON
+    content = models.JSONField()
     created_by = models.ForeignKey('accounts.User', null=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

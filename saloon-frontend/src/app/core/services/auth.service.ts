@@ -20,6 +20,24 @@ export class AuthService {
   get isLoggedIn(): boolean { return !!localStorage.getItem('access_token'); }
   get accessToken(): string | null { return localStorage.getItem('access_token'); }
 
+  /** True only for super_admin role */
+  get isSuperAdmin(): boolean {
+    return this.currentUser?.role === 'super_admin' || this.currentUser?.is_super_admin === true;
+  }
+
+  /** True for super_admin or company admin */
+  get isAdmin(): boolean {
+    return this.isSuperAdmin || this.currentUser?.role === 'admin';
+  }
+
+  get companyId(): number | null {
+    return this.currentUser?.company ?? null;
+  }
+
+  get companyName(): string {
+    return this.currentUser?.company_name || 'My Company';
+  }
+
   login(email: string, password: string): Observable<AuthTokens> {
     return this.http.post<AuthTokens>(`${environment.apiUrl}/auth/login/`, { email, password }).pipe(
       tap(res => {

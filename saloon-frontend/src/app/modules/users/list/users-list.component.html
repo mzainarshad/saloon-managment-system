@@ -1,0 +1,62 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Users</h1>
+      <p class="page-subtitle">
+        {{ auth.isSuperAdmin ? 'All users across all companies' : 'Users in your company' }}
+      </p>
+    </div>
+    <a routerLink="/users/new" class="btn btn-primary">
+      <mat-icon>person_add</mat-icon> New User
+    </a>
+  </div>
+
+  <div *ngIf="loading" class="loading-state">
+    <mat-icon class="spin">refresh</mat-icon> Loading...
+  </div>
+
+  <div *ngIf="!loading" class="table-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th *ngIf="auth.isSuperAdmin">Company</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="users.length === 0">
+          <td [attr.colspan]="auth.isSuperAdmin ? 6 : 5" class="empty-row">
+            No users found. <a routerLink="/users/new">Add one.</a>
+          </td>
+        </tr>
+        <tr *ngFor="let u of users">
+          <td class="fw-medium">{{ u.first_name }} {{ u.last_name }}</td>
+          <td>{{ u.email }}</td>
+          <td>
+            <span class="badge" [ngClass]="getRoleBadgeClass(u.role)">
+              {{ u.role | titlecase }}
+            </span>
+          </td>
+          <td *ngIf="auth.isSuperAdmin" class="muted">{{ u.company_name || '— Super Admin —' }}</td>
+          <td>
+            <span class="badge" [class.badge-success]="u.is_active" [class.badge-muted]="!u.is_active">
+              {{ u.is_active ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+          <td class="actions-cell">
+            <button class="icon-btn" [routerLink]="['/users', u.id, 'edit']" title="Edit">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button class="icon-btn danger" (click)="delete(u)" title="Delete">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

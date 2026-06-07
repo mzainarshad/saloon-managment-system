@@ -1,0 +1,28 @@
+
+# ─── ADD 'apps.companies' to LOCAL_APPS in config/settings/base.py ───────────
+#
+# Change this block:
+#
+#   LOCAL_APPS = [
+#       'apps.accounts',
+#       'apps.customers',
+#       ...
+#   ]
+#
+# To:
+#
+#   LOCAL_APPS = [
+#       'apps.accounts',
+#       'apps.companies',    # ← NEW
+#       'apps.customers',
+#       'apps.appointments',
+#       'apps.pos',
+#       'apps.services',
+#       'apps.inventory',
+#       'apps.staff',
+#       'apps.reports',
+#       'apps.marketing',
+#       'apps.notifications',
+#   ]
+#
+# No other changes are needed in settings.

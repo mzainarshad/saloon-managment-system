@@ -3,19 +3,22 @@ from django.contrib.postgres.fields import ArrayField
 
 
 class ServiceCategory(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    company = models.ForeignKey('companies.Company', on_delete=models.CASCADE, related_name='service_categories')
+    name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     sort_order = models.IntegerField(default=0)
 
     class Meta:
         db_table = 'service_categories'
         ordering = ['sort_order', 'name']
+        unique_together = [('company', 'name')]
 
     def __str__(self):
         return self.name
 
 
 class Service(models.Model):
+    company = models.ForeignKey('companies.Company', on_delete=models.CASCADE, related_name='services')
     name = models.CharField(max_length=200)
     category = models.ForeignKey(ServiceCategory, on_delete=models.SET_NULL, null=True, related_name='services')
     description = models.TextField(blank=True)
@@ -33,6 +36,7 @@ class Service(models.Model):
 
 
 class Package(models.Model):
+    company = models.ForeignKey('companies.Company', on_delete=models.CASCADE, related_name='packages')
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     services = models.ManyToManyField(Service, related_name='packages')
@@ -55,7 +59,8 @@ class GiftCard(models.Model):
         USED = 'used', 'Fully Used'
         EXPIRED = 'expired', 'Expired'
 
-    code = models.CharField(max_length=20, unique=True)
+    company = models.ForeignKey('companies.Company', on_delete=models.CASCADE, related_name='gift_cards')
+    code = models.CharField(max_length=20)
     initial_value = models.DecimalField(max_digits=10, decimal_places=2)
     remaining_value = models.DecimalField(max_digits=10, decimal_places=2)
     client = models.ForeignKey('customers.Client', null=True, blank=True, on_delete=models.SET_NULL, related_name='gift_cards')
@@ -65,6 +70,7 @@ class GiftCard(models.Model):
 
     class Meta:
         db_table = 'gift_cards'
+        unique_together = [('company', 'code')]
 
     def __str__(self):
         return f'{self.code} - Rs.{self.remaining_value} remaining'

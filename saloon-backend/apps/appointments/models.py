@@ -17,6 +17,7 @@ class Appointment(models.Model):
         ONLINE = 'online', 'Online Booking'
         APP = 'app', 'App'
 
+    company = models.ForeignKey('companies.Company', on_delete=models.CASCADE, related_name='appointments')
     client = models.ForeignKey('customers.Client', on_delete=models.CASCADE, related_name='appointments')
     staff = models.ForeignKey('staff.StaffProfile', on_delete=models.SET_NULL, null=True, related_name='appointments')
     service = models.ForeignKey('services.Service', on_delete=models.SET_NULL, null=True, related_name='appointments')

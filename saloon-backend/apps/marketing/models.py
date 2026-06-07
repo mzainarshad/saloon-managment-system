@@ -15,8 +15,9 @@ class Campaign(models.Model):
         SENT = 'sent', 'Sent'
         CANCELLED = 'cancelled', 'Cancelled'
 
+    company = models.ForeignKey('companies.Company', on_delete=models.CASCADE, related_name='campaigns')
     name = models.CharField(max_length=200)
-    subject = models.CharField(max_length=200, blank=True)  # for email
+    subject = models.CharField(max_length=200, blank=True)
     message = models.TextField()
     channel = models.CharField(max_length=10, choices=Channel.choices, default=Channel.SMS)
     audience_tags = ArrayField(models.CharField(max_length=50), blank=True, default=list)

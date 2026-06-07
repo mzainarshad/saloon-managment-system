@@ -3,10 +3,11 @@ from django.contrib.postgres.fields import ArrayField
 
 
 class StaffProfile(models.Model):
+    company = models.ForeignKey('companies.Company', on_delete=models.CASCADE, related_name='staff_profiles')
     user = models.OneToOneField('accounts.User', on_delete=models.CASCADE, related_name='staff_profile')
     phone = models.CharField(max_length=20, blank=True)
     specialisations = ArrayField(models.CharField(max_length=100), blank=True, default=list)
-    commission_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0)  # percentage
+    commission_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     bio = models.TextField(blank=True)
     profile_photo = models.ImageField(upload_to='staff/', null=True, blank=True)
     hired_date = models.DateField(null=True, blank=True)

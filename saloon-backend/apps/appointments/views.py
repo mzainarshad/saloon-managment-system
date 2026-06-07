@@ -2,14 +2,15 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.utils import timezone
+from apps.common.mixins import TenantQuerySetMixin
 from .models import Appointment, AppointmentStatusHistory
 from .serializers import (
     AppointmentSerializer, AppointmentDetailSerializer,
-    AppointmentStatusUpdateSerializer
+    AppointmentStatusUpdateSerializer,
 )
 
 
-class AppointmentViewSet(viewsets.ModelViewSet):
+class AppointmentViewSet(TenantQuerySetMixin, viewsets.ModelViewSet):
     queryset = Appointment.objects.select_related('client', 'staff__user', 'service')
     search_fields = ['client__name', 'client__phone', 'staff__user__first_name']
     filterset_fields = ['status', 'staff', 'service']
@@ -44,7 +45,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
             old_status=old_status,
             new_status=new_status,
             changed_by=request.user,
-            notes=serializer.validated_data.get('notes', '')
+            notes=serializer.validated_data.get('notes', ''),
         )
         appointment.status = new_status
         appointment.save()
@@ -60,6 +61,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     def available_slots(self, request):
         """Return available time slots for a given staff/date/service."""
         from datetime import datetime, timedelta, time
+
         staff_id = request.query_params.get('staff_id')
         date_str = request.query_params.get('date')
         duration = int(request.query_params.get('duration', 60))
@@ -68,10 +70,13 @@ class AppointmentViewSet(viewsets.ModelViewSet):
             return Response({'detail': 'staff_id and date are required.'}, status=400)
 
         date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        # Scope booked slots to the user's company too
+        company_filter = {} if request.user.is_super_admin else {'company': request.user.company}
         booked = Appointment.objects.filter(
             staff_id=staff_id,
             start_time__date=date,
-            status__in=['pending', 'confirmed', 'in_progress']
+            status__in=['pending', 'confirmed', 'in_progress'],
+            **company_filter,
         ).values_list('start_time', 'end_time')
 
         slots = []
@@ -80,8 +85,10 @@ class AppointmentViewSet(viewsets.ModelViewSet):
 
         while slot_start + timedelta(minutes=duration) <= end_of_day:
             slot_end = slot_start + timedelta(minutes=duration)
-            conflict = any(s < slot_end and e > slot_start for s, e in
-                           [(b[0].replace(tzinfo=None), b[1].replace(tzinfo=None)) for b in booked])
+            conflict = any(
+                s < slot_end and e > slot_start
+                for s, e in [(b[0].replace(tzinfo=None), b[1].replace(tzinfo=None)) for b in booked]
+            )
             if not conflict:
                 slots.append({'start': slot_start.isoformat(), 'end': slot_end.isoformat()})
             slot_start += timedelta(minutes=30)

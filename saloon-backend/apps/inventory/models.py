@@ -2,6 +2,7 @@ from django.db import models
 
 
 class Supplier(models.Model):
+    company = models.ForeignKey('companies.Company', on_delete=models.CASCADE, related_name='suppliers')
     name = models.CharField(max_length=200)
     contact_person = models.CharField(max_length=100, blank=True)
     phone = models.CharField(max_length=20, blank=True)
@@ -16,18 +17,21 @@ class Supplier(models.Model):
 
 
 class ProductCategory(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    company = models.ForeignKey('companies.Company', on_delete=models.CASCADE, related_name='product_categories')
+    name = models.CharField(max_length=100)
 
     class Meta:
         db_table = 'product_categories'
+        unique_together = [('company', 'name')]
 
     def __str__(self):
         return self.name
 
 
 class Product(models.Model):
+    company = models.ForeignKey('companies.Company', on_delete=models.CASCADE, related_name='products')
     name = models.CharField(max_length=200)
-    sku = models.CharField(max_length=100, unique=True)
+    sku = models.CharField(max_length=100)
     category = models.ForeignKey(ProductCategory, null=True, on_delete=models.SET_NULL)
     description = models.TextField(blank=True)
     cost_price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -42,6 +46,7 @@ class Product(models.Model):
     class Meta:
         db_table = 'products'
         ordering = ['name']
+        unique_together = [('company', 'sku')]
 
     def __str__(self):
         return f'{self.name} (Stock: {self.stock_qty})'
@@ -61,7 +66,7 @@ class StockMovement(models.Model):
 
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='stock_movements')
     movement_type = models.CharField(max_length=20, choices=MovementType.choices)
-    qty = models.IntegerField()  # positive = in, negative = out
+    qty = models.IntegerField()
     reason = models.CharField(max_length=200, blank=True)
     created_by = models.ForeignKey('accounts.User', null=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -78,6 +83,7 @@ class PurchaseOrder(models.Model):
         RECEIVED = 'received', 'Received'
         CANCELLED = 'cancelled', 'Cancelled'
 
+    company = models.ForeignKey('companies.Company', on_delete=models.CASCADE, related_name='purchase_orders')
     supplier = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.DRAFT)
     notes = models.TextField(blank=True)

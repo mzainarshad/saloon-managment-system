@@ -19,19 +19,14 @@ class AppointmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appointment
         fields = '__all__'
-        read_only_fields = ['created_at', 'updated_at', 'reminder_sent', 'end_time']
+        read_only_fields = ['created_at', 'updated_at', 'reminder_sent', 'end_time', 'company']
 
     def validate(self, data):
         start = data.get('start_time')
         service = data.get('service')
-
-        # Auto-calculate end_time from service duration
         if start and service:
             data['end_time'] = start + timedelta(minutes=service.duration_minutes)
-
         end = data.get('end_time')
-
-        # Check staff availability
         staff = data.get('staff')
         if staff and start and end:
             conflict = Appointment.objects.filter(

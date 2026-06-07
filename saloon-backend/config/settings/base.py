@@ -26,6 +26,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     'apps.accounts',
+    'apps.companies',    # ← ADD THIS
     'apps.customers',
     'apps.appointments',
     'apps.pos',
@@ -36,7 +37,6 @@ LOCAL_APPS = [
     'apps.marketing',
     'apps.notifications',
 ]
-
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [

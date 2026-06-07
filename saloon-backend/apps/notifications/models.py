@@ -19,6 +19,7 @@ class Notification(models.Model):
         SENT = 'sent', 'Sent'
         FAILED = 'failed', 'Failed'
 
+    company = models.ForeignKey('companies.Company', on_delete=models.CASCADE, related_name='notifications')
     notification_type = models.CharField(max_length=40, choices=NotificationType.choices)
     channel = models.CharField(max_length=10, choices=Channel.choices)
     recipient = models.CharField(max_length=200)

@@ -1,0 +1,62 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Companies</h1>
+      <p class="page-subtitle">Manage all tenant companies</p>
+    </div>
+    <a routerLink="/companies/new" class="btn btn-primary">
+      <mat-icon>add</mat-icon> New Company
+    </a>
+  </div>
+
+  <div *ngIf="loading" class="loading-state">
+    <mat-icon class="spin">refresh</mat-icon> Loading...
+  </div>
+
+  <div *ngIf="!loading" class="table-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Slug</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Users</th>
+          <th>Status</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="companies.length === 0">
+          <td colspan="8" class="empty-row">No companies found. <a routerLink="/companies/new">Create one.</a></td>
+        </tr>
+        <tr *ngFor="let c of companies">
+          <td class="fw-medium">{{ c.name }}</td>
+          <td class="muted">{{ c.slug }}</td>
+          <td>{{ c.email || '—' }}</td>
+          <td>{{ c.phone || '—' }}</td>
+          <td>{{ c.user_count ?? '—' }}</td>
+          <td>
+            <span class="badge" [class.badge-success]="c.is_active" [class.badge-muted]="!c.is_active">
+              {{ c.is_active ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+          <td class="muted">{{ c.created_at | date:'mediumDate' }}</td>
+          <td class="actions-cell">
+            <button class="icon-btn" [routerLink]="['/companies', c.id, 'edit']" title="Edit">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button class="icon-btn" (click)="toggleActive(c)"
+                    [title]="c.is_active ? 'Deactivate' : 'Activate'">
+              <mat-icon>{{ c.is_active ? 'toggle_on' : 'toggle_off' }}</mat-icon>
+            </button>
+            <button class="icon-btn danger" (click)="delete(c)" title="Delete">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

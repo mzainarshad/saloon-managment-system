@@ -16,12 +16,13 @@ class UserManager(BaseUserManager):
     def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-        extra_fields.setdefault('role', User.Role.ADMIN)
+        extra_fields.setdefault('role', User.Role.SUPER_ADMIN)
         return self.create_user(email, password, **extra_fields)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
     class Role(models.TextChoices):
+        SUPER_ADMIN = 'super_admin', 'Super Admin'
         ADMIN = 'admin', 'Admin'
         MANAGER = 'manager', 'Manager'
         STYLIST = 'stylist', 'Stylist'
@@ -32,6 +33,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.STYLIST)
+    # Super Admin has company=None; all other users must have a company
+    company = models.ForeignKey(
+        'companies.Company',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='users',
+    )
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
@@ -52,9 +61,20 @@ class User(AbstractBaseUser, PermissionsMixin):
     def full_name(self):
         return f'{self.first_name} {self.last_name}'
 
+    @property
+    def is_super_admin(self):
+        return self.role == self.Role.SUPER_ADMIN
+
 
 class AuditLog(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name='audit_logs')
+    company = models.ForeignKey(
+        'companies.Company',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='audit_logs',
+    )
     method = models.CharField(max_length=10)
     endpoint = models.CharField(max_length=500)
     payload = models.JSONField(null=True, blank=True)

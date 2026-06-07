@@ -21,7 +21,6 @@ class StaffProfileSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     schedules = WorkScheduleSerializer(many=True, read_only=True)
 
-    # Write fields
     email = serializers.EmailField(write_only=True, required=False)
     first_name = serializers.CharField(write_only=True, required=False)
     last_name = serializers.CharField(write_only=True, required=False)
@@ -30,6 +29,7 @@ class StaffProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = StaffProfile
         fields = '__all__'
+        read_only_fields = ['company']
 
     def get_user(self, obj):
         return {
@@ -47,6 +47,7 @@ class StaffProfileSerializer(serializers.ModelSerializer):
         first_name = validated_data.pop('first_name', '')
         last_name = validated_data.pop('last_name', '')
         is_active = validated_data.pop('is_active', True)
+        company = validated_data.get('company')
 
         user, created = User.objects.get_or_create(
             email=email,
@@ -55,6 +56,7 @@ class StaffProfileSerializer(serializers.ModelSerializer):
                 'last_name': last_name,
                 'is_active': is_active,
                 'role': User.Role.STYLIST,
+                'company': company,
             }
         )
         if created:

@@ -32,14 +32,11 @@ class SaleCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         items_data = validated_data.pop('items')
         payments_data = validated_data.pop('payments', [])
-        user = self.context['request'].user
 
-        # Pop discount/tax fields out of validated_data
         discount_amount = validated_data.pop('discount_amount', 0) or 0
         discount_percent = validated_data.pop('discount_percent', 0) or 0
         tax_percent = validated_data.pop('tax_percent', 0) or 0
 
-        # Calculate totals
         subtotal = sum(item['unit_price'] * item['quantity'] for item in items_data)
         if discount_percent:
             discount_amount = subtotal * discount_percent / 100
@@ -50,6 +47,7 @@ class SaleCreateSerializer(serializers.ModelSerializer):
         for item in items_data:
             item['total_price'] = item['unit_price'] * item['quantity']
 
+        # created_by and company come from perform_create via validated_data
         sale = Sale.objects.create(
             **validated_data,
             subtotal=subtotal,
@@ -58,7 +56,6 @@ class SaleCreateSerializer(serializers.ModelSerializer):
             tax_percent=tax_percent,
             tax_amount=tax_amount,
             total_amount=total,
-            created_by=user,
         )
 
         for item_data in items_data:
@@ -94,7 +91,6 @@ class SaleCreateSerializer(serializers.ModelSerializer):
 
         return sale
 
-
 class SaleSerializer(serializers.ModelSerializer):
     items = SaleItemSerializer(many=True, read_only=True)
     payments = PaymentSerializer(many=True, read_only=True)
@@ -104,3 +100,4 @@ class SaleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sale
         fields = '__all__'
+        read_only_fields = ['company']

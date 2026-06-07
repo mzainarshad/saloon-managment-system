@@ -10,6 +10,8 @@ interface NavItem {
   icon: string;
   route?: string;
   children?: { label: string; route: string }[];
+  superAdminOnly?: boolean;
+  adminOnly?: boolean;
 }
 
 @Component({
@@ -25,7 +27,7 @@ export class LayoutComponent implements OnInit {
   expandedMenu: string | null = null;
   mobileOpen = false;
 
-  navItems: NavItem[] = [
+  allNavItems: NavItem[] = [
     { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
     { label: 'POS', icon: 'point_of_sale', route: '/pos' },
     {
@@ -61,10 +63,22 @@ export class LayoutComponent implements OnInit {
         { label: 'Service Popularity', route: '/reports/services' },
       ]
     },
+    // Admin-level items
+    { label: 'Users', icon: 'manage_accounts', route: '/users', adminOnly: true },
+    // Super Admin only items
+    { label: 'Companies', icon: 'business', route: '/companies', superAdminOnly: true },
     { label: 'Settings', icon: 'settings', route: '/settings' },
   ];
 
-  constructor(private auth: AuthService, private router: Router) {}
+  get navItems(): NavItem[] {
+    return this.allNavItems.filter(item => {
+      if (item.superAdminOnly) return this.auth.isSuperAdmin;
+      if (item.adminOnly) return this.auth.isAdmin;
+      return true;
+    });
+  }
+
+  constructor(public auth: AuthService, private router: Router) {}
 
   ngOnInit() {
     this.auth.currentUser$.subscribe(u => this.currentUser = u);
@@ -80,8 +94,14 @@ export class LayoutComponent implements OnInit {
   }
 
   logout() { this.auth.logout(); }
+
   getInitials(user: User | null): string {
     if (!user) return '?';
     return `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`.toUpperCase();
+  }
+
+  get headerTitle(): string {
+    if (this.auth.isSuperAdmin) return 'Super Admin';
+    return this.auth.companyName;
   }
 }
