@@ -1,0 +1,16 @@
+<div class="page-header">
+  <div><h1>Service Categories</h1></div>
+  <a class="btn btn-secondary btn-sm" routerLink="/services">← Back to Services</a>
+</div>
+<div class="card" style="max-width:500px;">
+  <div style="display:flex;gap:10px;margin-bottom:20px;">
+    <input class="form-control" [(ngModel)]="newName" placeholder="New category name..." (keyup.enter)="add()">
+    <button class="btn btn-primary" [disabled]="adding" (click)="add()">Add</button>
+  </div>
+  <div *ngIf="loading" class="loading-overlay"><svg class="spinner" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="8" opacity="0.3"/><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/></svg></div>
+  <div *ngIf="!loading && !categories.length" class="empty-state"><p>No categories yet. Add one above.</p></div>
+  <div *ngFor="let c of categories" class="cat-row">
+    <mat-icon style="color:var(--color-text-muted);font-size:16px;width:16px;height:16px;">label</mat-icon>
+    <span>{{c.name}}</span>
+  </div>
+</div>

@@ -1,0 +1,45 @@
+<div class="page-header">
+  <div><h1>{{isEdit ? 'Edit Staff' : 'Add Staff Member'}}</h1></div>
+  <a class="btn btn-secondary btn-sm" routerLink="/staff">← Back</a>
+</div>
+<div class="card" style="max-width:600px;">
+  <div *ngIf="loading" class="loading-overlay"><svg class="spinner" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="8" opacity="0.3"/><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/></svg></div>
+  <form *ngIf="!loading" [formGroup]="form" (ngSubmit)="save()">
+    <div class="grid-2" style="gap:16px;">
+      <div class="form-group">
+        <label class="form-label">First Name *</label>
+        <input class="form-control" formControlName="first_name" placeholder="First name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Last Name *</label>
+        <input class="form-control" formControlName="last_name" placeholder="Last name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email *</label>
+        <input class="form-control" type="email" formControlName="email" placeholder="staff@salon.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone</label>
+        <input class="form-control" formControlName="phone" placeholder="+92 300 0000000">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Commission Rate (%)</label>
+        <input class="form-control" type="number" formControlName="commission_rate" min="0" max="100">
+      </div>
+      <div class="form-group" style="align-self:end;">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <input type="checkbox" formControlName="is_active">
+          <span class="form-label" style="margin:0;">Active</span>
+        </label>
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:16px;">
+      <label class="form-label">Specialisations (comma separated)</label>
+      <input class="form-control" formControlName="specialisations" placeholder="e.g. Hair Color, Highlights, Balayage">
+    </div>
+    <div style="display:flex;gap:12px;margin-top:24px;">
+      <button type="submit" class="btn btn-primary" [disabled]="saving">{{saving ? 'Saving...' : (isEdit ? 'Update Staff' : 'Add Staff')}}</button>
+      <a class="btn btn-secondary" routerLink="/staff">Cancel</a>
+    </div>
+  </form>
+</div>

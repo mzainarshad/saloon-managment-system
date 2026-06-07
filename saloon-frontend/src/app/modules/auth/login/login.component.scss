@@ -1,0 +1,24 @@
+.login-page { display:flex; height:100vh; }
+.login-left { flex:1; background:#111; color:#fff; padding:60px; display:flex; flex-direction:column; justify-content:space-between; }
+.brand { display:flex; align-items:center; gap:10px; }
+.brand-icon { font-size:28px; }
+.brand-name { font-size:20px; font-weight:700; }
+.tagline h1 { font-size:36px; font-weight:800; line-height:1.2; margin-bottom:16px; }
+.tagline p { color:rgba(255,255,255,.6); font-size:15px; }
+.features { display:flex; flex-direction:column; gap:10px; }
+.feature-item { display:flex; align-items:center; gap:10px; color:rgba(255,255,255,.8); font-size:14px; }
+.check { color:#22c55e; font-weight:700; }
+.login-right { width:480px; display:flex; align-items:center; justify-content:center; background:#fff; padding:40px; }
+.login-card { width:100%; max-width:360px; }
+.login-card h2 { font-size:24px; font-weight:700; margin-bottom:6px; }
+.subtitle { color:#666; font-size:14px; }
+.error-msg { background:#fee2e2; color:#dc2626; border:1px solid #fecaca; border-radius:6px; padding:10px 14px; font-size:13px; margin-top:16px; }
+.password-wrapper { position:relative; }
+.password-wrapper .form-control { padding-right:44px; }
+.toggle-pw { position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#666; display:flex; }
+.spinner { animation:spin 1s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+@media (max-width:768px) {
+  .login-left { display:none; }
+  .login-right { width:100%; }
+}

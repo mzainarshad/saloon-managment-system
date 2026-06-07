@@ -1,0 +1,48 @@
+<div class="page-header">
+  <div><h1>Appointments</h1><p>Manage all salon bookings</p></div>
+  <button class="btn btn-primary btn-sm" routerLink="/appointments/new">
+    <mat-icon style="font-size:15px;width:15px;height:15px;">add</mat-icon> New Appointment
+  </button>
+</div>
+<div class="card">
+  <div class="toolbar">
+    <div class="search-box">
+      <mat-icon>search</mat-icon>
+      <input placeholder="Search by client or staff..." [(ngModel)]="search" (keyup.enter)="page=1;load()">
+    </div>
+    <select class="form-control" style="width:160px;" [(ngModel)]="statusFilter" (change)="page=1;load()">
+      <option value="">All Statuses</option>
+      <option *ngFor="let s of statuses" [value]="s">{{s | titlecase}}</option>
+    </select>
+    <button class="btn btn-secondary btn-sm" (click)="page=1;load()">Search</button>
+  </div>
+  <div *ngIf="loading" class="loading-overlay"><svg class="spinner" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="8" opacity="0.3"/><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/></svg></div>
+  <div *ngIf="!loading && !appointments.length" class="empty-state"><mat-icon>event_busy</mat-icon><p>No appointments found</p></div>
+  <table *ngIf="!loading && appointments.length" class="data-table">
+    <thead><tr><th>#</th><th>Client</th><th>Service</th><th>Staff</th><th>Date & Time</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+      <tr *ngFor="let a of appointments">
+        <td><strong>#{{a.id}}</strong></td>
+        <td>{{a.client_name}}</td>
+        <td>{{a.service_name || '—'}}</td>
+        <td>{{a.staff_name || '—'}}</td>
+        <td>{{a.start_time | date:'dd MMM, h:mm a'}}</td>
+        <td><span class="badge" [ngClass]="getStatusClass(a.status)">{{a.status | titlecase}}</span></td>
+        <td>
+          <div style="display:flex;gap:4px;">
+            <select class="btn btn-secondary btn-sm" [(ngModel)]="a.status" (change)="changeStatus(a, a.status)" style="cursor:pointer;">
+              <option *ngFor="let s of statuses" [value]="s">{{s | titlecase}}</option>
+            </select>
+            <button class="btn btn-secondary btn-sm" [routerLink]="['/appointments', a.id, 'edit']">Edit</button>
+            <button class="btn btn-danger btn-sm" (click)="delete(a)"><mat-icon style="font-size:14px;width:14px;height:14px;">delete</mat-icon></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button class="btn btn-secondary btn-sm" [disabled]="page===1" (click)="prevPage()">← Prev</button>
+    <span>Page {{page}} of {{totalPages}}</span>
+    <button class="btn btn-secondary btn-sm" [disabled]="page===totalPages" (click)="nextPage()">Next →</button>
+  </div>
+</div>

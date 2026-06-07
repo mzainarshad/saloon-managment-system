@@ -1,0 +1,47 @@
+<div class="page-header">
+  <div><h1>Customers</h1><p>Manage your client database</p></div>
+  <button class="btn btn-primary btn-sm" routerLink="/customers/new">
+    <mat-icon style="font-size:15px;width:15px;height:15px;">person_add</mat-icon> Add Customer
+  </button>
+</div>
+<div class="card">
+  <div class="toolbar">
+    <div class="search-box">
+      <mat-icon>search</mat-icon>
+      <input placeholder="Search by name or phone..." [(ngModel)]="search" (keyup.enter)="page=1;load()">
+    </div>
+    <button class="btn btn-secondary btn-sm" (click)="page=1;load()">Search</button>
+    <span class="count-badge">{{totalCount}} total</span>
+  </div>
+  <div *ngIf="loading" class="loading-overlay"><svg class="spinner" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="8" opacity="0.3"/><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/></svg></div>
+  <div *ngIf="!loading && !customers.length" class="empty-state"><mat-icon>person_off</mat-icon><p>No customers found</p></div>
+  <table *ngIf="!loading && customers.length" class="data-table">
+    <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Visits</th><th>Loyalty Pts</th><th>Total Spent</th><th>Actions</th></tr></thead>
+    <tbody>
+      <tr *ngFor="let c of customers">
+        <td>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="avatar">{{c.name?.charAt(0)}}</div>
+            <div><strong>{{c.name}}</strong><br><small style="color:var(--color-text-muted);">{{c.gender | titlecase}}</small></div>
+          </div>
+        </td>
+        <td>{{c.phone}}</td>
+        <td>{{c.email || '—'}}</td>
+        <td>{{c.visit_count || 0}}</td>
+        <td><span class="badge badge-purple">{{c.loyalty_points || 0}} pts</span></td>
+        <td>Rs.{{c.total_spent || 0 | number:'1.0-0'}}</td>
+        <td>
+          <div style="display:flex;gap:4px;">
+            <button class="btn btn-secondary btn-sm" [routerLink]="['/customers', c.id, 'edit']">Edit</button>
+            <button class="btn btn-danger btn-sm" (click)="delete(c)"><mat-icon style="font-size:14px;width:14px;height:14px;">delete</mat-icon></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button class="btn btn-secondary btn-sm" [disabled]="page===1" (click)="prevPage()">← Prev</button>
+    <span>Page {{page}} of {{totalPages}}</span>
+    <button class="btn btn-secondary btn-sm" [disabled]="page===totalPages" (click)="nextPage()">Next →</button>
+  </div>
+</div>

@@ -1,0 +1,55 @@
+<div class="page-header">
+  <div>
+    <h1>{{isEdit ? 'Edit Appointment' : 'New Appointment'}}</h1>
+    <p>{{isEdit ? 'Update appointment details' : 'Book a new appointment'}}</p>
+  </div>
+  <a class="btn btn-secondary btn-sm" routerLink="/appointments">← Back</a>
+</div>
+<div class="card" style="max-width:600px;">
+  <div *ngIf="loading" class="loading-overlay"><svg class="spinner" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="8" opacity="0.3"/><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/></svg></div>
+  <form *ngIf="!loading" [formGroup]="form" (ngSubmit)="save()">
+    <div class="grid-2" style="gap:16px;">
+      <div class="form-group">
+        <label class="form-label">Client *</label>
+        <select class="form-control" formControlName="client">
+          <option value="">Select client...</option>
+          <option *ngFor="let c of customers" [value]="c.id">{{c.name}} — {{c.phone}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Staff Member *</label>
+        <select class="form-control" formControlName="staff">
+          <option value="">Select staff...</option>
+          <option *ngFor="let s of staff" [value]="s.id">{{s.name || s.user?.first_name}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Service *</label>
+        <select class="form-control" formControlName="service">
+          <option value="">Select service...</option>
+          <option *ngFor="let s of services" [value]="s.id">{{s.name}} — Rs.{{s.price}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date & Time *</label>
+        <input class="form-control" type="datetime-local" formControlName="start_time">
+      </div>
+      <div class="form-group" *ngIf="isEdit">
+        <label class="form-label">Status</label>
+        <select class="form-control" formControlName="status">
+          <option *ngFor="let s of statuses" [value]="s">{{s | titlecase}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:16px;">
+      <label class="form-label">Notes</label>
+      <textarea class="form-control" formControlName="notes" rows="3" placeholder="Any special notes..."></textarea>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:24px;">
+      <button type="submit" class="btn btn-primary" [disabled]="saving">
+        {{saving ? 'Saving...' : (isEdit ? 'Update Appointment' : 'Create Appointment')}}
+      </button>
+      <a class="btn btn-secondary" routerLink="/appointments">Cancel</a>
+    </div>
+  </form>
+</div>

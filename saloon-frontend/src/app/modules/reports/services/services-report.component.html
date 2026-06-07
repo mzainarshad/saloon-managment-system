@@ -1,0 +1,16 @@
+<div class="page-header"><div><h1>Service Popularity Report</h1></div></div>
+<div class="card">
+  <div *ngIf="loading" class="loading-overlay"><svg class="spinner" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="8" opacity="0.3"/><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/></svg></div>
+  <div *ngIf="!loading && !report.length" class="empty-state"><mat-icon>content_cut</mat-icon><p>No service data found</p></div>
+  <table *ngIf="!loading && report.length" class="data-table">
+    <thead><tr><th>Rank</th><th>Service</th><th>Bookings</th><th>Revenue</th></tr></thead>
+    <tbody>
+      <tr *ngFor="let row of report; let i = index">
+        <td><span class="badge badge-neutral">#{{i+1}}</span></td>
+        <td><strong>{{row.service_name}}</strong></td>
+        <td>{{row.count}}</td>
+        <td>Rs.{{row.revenue | number:'1.0-0'}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

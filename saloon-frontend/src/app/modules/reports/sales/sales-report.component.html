@@ -1,0 +1,59 @@
+<div class="page-header">
+  <div><h1>Sales Report</h1><p>Track and analyze all transactions</p></div>
+  <a class="btn btn-primary btn-sm" routerLink="/pos">New Sale</a>
+</div>
+
+<!-- Summary cards -->
+<div class="grid-3" style="margin-bottom:20px;" *ngIf="summary">
+  <div class="kpi-card">
+    <div class="kpi-label">Today's Revenue</div>
+    <div class="kpi-value">Rs.{{summary.total_revenue || 0 | number:'1.0-0'}}</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Today's Sales</div>
+    <div class="kpi-value">{{summary.total_sales || 0}}</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Avg. Sale Value</div>
+    <div class="kpi-value">Rs.{{summary.total_sales ? ((summary.total_revenue || 0) / summary.total_sales | number:'1.0-0') : 0}}</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="filters">
+    <input class="form-control" type="date" [(ngModel)]="dateFrom" (change)="page=1;load()" style="width:150px;" placeholder="From date">
+    <input class="form-control" type="date" [(ngModel)]="dateTo" (change)="page=1;load()" style="width:150px;" placeholder="To date">
+    <select class="form-control" style="width:140px;" [(ngModel)]="statusFilter" (change)="page=1;load()">
+      <option value="">All Statuses</option>
+      <option *ngFor="let s of statuses" [value]="s">{{s | titlecase}}</option>
+    </select>
+    <select class="form-control" style="width:140px;" [(ngModel)]="paymentFilter" (change)="page=1;load()">
+      <option value="">All Payments</option>
+      <option *ngFor="let p of payments" [value]="p">{{p | titlecase}}</option>
+    </select>
+    <button class="btn btn-secondary btn-sm" (click)="dateFrom='';dateTo='';statusFilter='';paymentFilter='';page=1;load()">Clear</button>
+  </div>
+
+  <div *ngIf="loading" class="loading-overlay"><svg class="spinner" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="8" opacity="0.3"/><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/></svg></div>
+  <div *ngIf="!loading && !sales.length" class="empty-state"><mat-icon>receipt_long</mat-icon><p>No sales found</p></div>
+  <table *ngIf="!loading && sales.length" class="data-table">
+    <thead><tr><th>Sale #</th><th>Customer</th><th>Staff</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th>Date</th></tr></thead>
+    <tbody>
+      <tr *ngFor="let s of sales">
+        <td><strong>#{{s.id}}</strong></td>
+        <td>{{s.client_name || 'Walk-in'}}</td>
+        <td>{{s.staff_name || '—'}}</td>
+        <td>{{s.items?.length || 0}} item(s)</td>
+        <td><strong>Rs.{{s.total_amount | number:'1.0-0'}}</strong></td>
+        <td><span class="badge badge-neutral">{{s.payment_method | titlecase}}</span></td>
+        <td><span class="badge" [ngClass]="getStatusClass(s.status)">{{s.status | titlecase}}</span></td>
+        <td>{{s.created_at | date:'dd MMM, h:mm a'}}</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button class="btn btn-secondary btn-sm" [disabled]="page===1" (click)="prevPage()">← Prev</button>
+    <span>Page {{page}} of {{totalPages}} ({{totalCount}} total)</span>
+    <button class="btn btn-secondary btn-sm" [disabled]="page===totalPages" (click)="nextPage()">Next →</button>
+  </div>
+</div>

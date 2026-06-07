@@ -1,0 +1,36 @@
+<div class="page-header">
+  <div><h1>Services</h1><p>Manage salon services and pricing</p></div>
+  <div style="display:flex;gap:8px;">
+    <a class="btn btn-secondary btn-sm" routerLink="/services/categories">Categories</a>
+    <button class="btn btn-primary btn-sm" routerLink="/services/new"><mat-icon style="font-size:15px;width:15px;height:15px;">add</mat-icon> Add Service</button>
+  </div>
+</div>
+<div class="card">
+  <div style="display:flex;gap:12px;margin-bottom:16px;">
+    <div class="search-box">
+      <mat-icon>search</mat-icon>
+      <input placeholder="Search services..." [(ngModel)]="search" (keyup.enter)="load()">
+    </div>
+    <button class="btn btn-secondary btn-sm" (click)="load()">Search</button>
+  </div>
+  <div *ngIf="loading" class="loading-overlay"><svg class="spinner" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="8" opacity="0.3"/><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/></svg></div>
+  <div *ngIf="!loading && !services.length" class="empty-state"><mat-icon>content_cut</mat-icon><p>No services found</p></div>
+  <table *ngIf="!loading && services.length" class="data-table">
+    <thead><tr><th>Service Name</th><th>Category</th><th>Duration</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+      <tr *ngFor="let s of services">
+        <td><strong>{{s.name}}</strong></td>
+        <td>{{s.category_name || '—'}}</td>
+        <td>{{s.duration_minutes}} min</td>
+        <td>Rs.{{s.price}}</td>
+        <td><span class="badge" [class.badge-success]="s.is_active" [class.badge-neutral]="!s.is_active">{{s.is_active ? 'Active' : 'Inactive'}}</span></td>
+        <td>
+          <div style="display:flex;gap:4px;">
+            <button class="btn btn-secondary btn-sm" [routerLink]="['/services', s.id, 'edit']">Edit</button>
+            <button class="btn btn-danger btn-sm" (click)="delete(s)"><mat-icon style="font-size:14px;width:14px;height:14px;">delete</mat-icon></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

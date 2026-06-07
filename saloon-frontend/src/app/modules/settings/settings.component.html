@@ -1,0 +1,87 @@
+<div class="page-header">
+  <div><h1>Settings</h1><p>Manage account and preferences</p></div>
+</div>
+
+<div class="settings-layout">
+  <div class="settings-nav card">
+    <button class="nav-item" [class.active]="activeTab==='profile'" (click)="activeTab='profile'">
+      <mat-icon>person</mat-icon> Profile
+    </button>
+    <button class="nav-item" [class.active]="activeTab==='password'" (click)="activeTab='password'">
+      <mat-icon>lock</mat-icon> Password
+    </button>
+    <button class="nav-item" [class.active]="activeTab==='business'" (click)="activeTab='business'">
+      <mat-icon>business</mat-icon> Business
+    </button>
+  </div>
+
+  <div class="settings-content">
+    <!-- Profile -->
+    <div class="card" *ngIf="activeTab==='profile'">
+      <div class="section-title">Profile Information</div>
+      <div class="profile-header">
+        <div class="big-avatar">{{currentUser?.first_name?.[0]}}{{currentUser?.last_name?.[0]}}</div>
+        <div>
+          <div class="profile-name">{{currentUser?.first_name}} {{currentUser?.last_name}}</div>
+          <div class="profile-role">{{roleLabel}}</div>
+          <div class="profile-email">{{currentUser?.email}}</div>
+        </div>
+      </div>
+      <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+        <div class="grid-2" style="gap:16px;margin-top:20px;">
+          <div class="form-group">
+            <label class="form-label">First Name</label>
+            <input class="form-control" formControlName="first_name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name</label>
+            <input class="form-control" formControlName="last_name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email (read-only)</label>
+            <input class="form-control" formControlName="email">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Role</label>
+            <input class="form-control" [value]="roleLabel" disabled>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top:20px;" [disabled]="saving">
+          {{saving ? 'Saving...' : 'Save Changes'}}
+        </button>
+      </form>
+    </div>
+
+    <!-- Password -->
+    <div class="card" *ngIf="activeTab==='password'">
+      <div class="section-title">Change Password</div>
+      <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" style="max-width:400px;margin-top:20px;">
+        <div class="form-group" style="margin-bottom:16px;">
+          <label class="form-label">Current Password</label>
+          <input class="form-control" type="password" formControlName="old_password">
+        </div>
+        <div class="form-group" style="margin-bottom:16px;">
+          <label class="form-label">New Password (min 8 characters)</label>
+          <input class="form-control" type="password" formControlName="new_password">
+        </div>
+        <div class="form-group" style="margin-bottom:16px;">
+          <label class="form-label">Confirm New Password</label>
+          <input class="form-control" type="password" formControlName="confirm_password">
+        </div>
+        <button type="submit" class="btn btn-primary" [disabled]="savingPw">
+          {{savingPw ? 'Changing...' : 'Change Password'}}
+        </button>
+      </form>
+    </div>
+
+    <!-- Business -->
+    <div class="card" *ngIf="activeTab==='business'">
+      <div class="section-title">Business Settings</div>
+      <div class="coming-soon">
+        <mat-icon>business</mat-icon>
+        <p>Business configuration settings are managed via the Django Admin panel.</p>
+        <a href="/admin" target="_blank" class="btn btn-secondary" style="margin-top:12px;">Open Admin Panel</a>
+      </div>
+    </div>
+  </div>
+</div>

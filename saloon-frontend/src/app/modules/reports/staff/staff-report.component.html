@@ -1,0 +1,21 @@
+<div class="page-header"><div><h1>Staff Commission Report</h1></div></div>
+<div class="card">
+  <div class="filters">
+    <input class="form-control" type="date" [(ngModel)]="dateFrom" (change)="load()" style="width:150px;">
+    <input class="form-control" type="date" [(ngModel)]="dateTo" (change)="load()" style="width:150px;">
+  </div>
+  <div *ngIf="loading" class="loading-overlay"><svg class="spinner" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="8" opacity="0.3"/><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/></svg></div>
+  <div *ngIf="!loading && !report.length" class="empty-state"><mat-icon>badge</mat-icon><p>No commission data found</p></div>
+  <table *ngIf="!loading && report.length" class="data-table">
+    <thead><tr><th>Staff</th><th>Sales Count</th><th>Revenue</th><th>Commission Rate</th><th>Commission Earned</th></tr></thead>
+    <tbody>
+      <tr *ngFor="let row of report">
+        <td><strong>{{row.staff_name}}</strong></td>
+        <td>{{row.sales_count}}</td>
+        <td>Rs.{{row.total_revenue | number:'1.0-0'}}</td>
+        <td>{{row.commission_rate || 0}}%</td>
+        <td><strong>Rs.{{row.commission_earned | number:'1.0-0'}}</strong></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

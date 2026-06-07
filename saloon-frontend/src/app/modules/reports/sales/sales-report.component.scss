@@ -1,0 +1,4 @@
+.filters { display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap; }
+.pagination { display:flex;justify-content:center;align-items:center;gap:16px;padding-top:16px;font-size:13px;color:var(--color-text-muted); }
+.spinner { animation:spin 1s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }

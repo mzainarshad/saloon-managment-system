@@ -1,0 +1,113 @@
+<div class="page-header">
+  <div>
+    <h1>Executive Dashboard</h1>
+    <p>Complete business overview at a glance</p>
+  </div>
+</div>
+
+<div *ngIf="loading" class="loading-overlay" style="height:300px;">
+  <svg class="spinner" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="12" cy="12" r="10" opacity="0.2" stroke-dasharray="32"/>
+    <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+  </svg>
+</div>
+
+<ng-container *ngIf="!loading && kpi">
+  <!-- KPI Row -->
+  <div class="grid-4" style="margin-bottom:20px;">
+    <div class="kpi-card">
+      <div class="kpi-icon kpi-icon-green"><mat-icon>attach_money</mat-icon></div>
+      <div class="kpi-label">Monthly Sales</div>
+      <div class="kpi-value">Rs.{{kpi.monthly_sales | number:'1.0-0'}}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon kpi-icon-blue"><mat-icon>group</mat-icon></div>
+      <div class="kpi-label">Total Customers</div>
+      <div class="kpi-value">{{kpi.total_customers}}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon kpi-icon-red"><mat-icon>receipt</mat-icon></div>
+      <div class="kpi-label">Total Expenses</div>
+      <div class="kpi-value">Rs.{{kpi.total_expenses | number:'1.0-0'}}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon kpi-icon-purple"><mat-icon>trending_up</mat-icon></div>
+      <div class="kpi-label">Net Profit</div>
+      <div class="kpi-value">Rs.{{kpi.net_profit | number:'1.0-0'}}</div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="chart-header">
+        <h3>Sales Trend</h3>
+        <div class="period-tabs">
+          <button [class.active]="trendPeriod==='day'" (click)="setPeriod('day')">Day</button>
+          <button [class.active]="trendPeriod==='week'" (click)="setPeriod('week')">Week</button>
+          <button [class.active]="trendPeriod==='month'" (click)="setPeriod('month')">Month</button>
+        </div>
+      </div>
+      <canvas baseChart [data]="lineChartData" [options]="lineChartOptions" type="line" style="max-height:200px;"></canvas>
+    </div>
+    <div class="card">
+      <h3 style="margin-bottom:16px;">Payment Type Distribution</h3>
+      <div *ngIf="!kpi.payment_distribution?.length" class="empty-state" style="padding:40px 0;">
+        <mat-icon>pie_chart</mat-icon>
+        <p>No payment data</p>
+      </div>
+      <canvas *ngIf="kpi.payment_distribution?.length" baseChart [data]="pieChartData" [options]="pieChartOptions" type="pie" style="max-height:200px;"></canvas>
+    </div>
+  </div>
+
+  <!-- Top Services -->
+  <div class="card" style="margin-bottom:20px;">
+    <h3 style="margin-bottom:16px;">Top Services</h3>
+    <div *ngIf="!kpi.top_services?.length" class="empty-state" style="padding:20px 0;">
+      <p>No sales data for this period.</p>
+    </div>
+    <table *ngIf="kpi.top_services?.length" class="data-table">
+      <thead><tr><th>Service</th><th>Bookings</th><th>Revenue</th></tr></thead>
+      <tbody>
+        <tr *ngFor="let s of kpi.top_services">
+          <td><strong>{{s.service_name}}</strong></td>
+          <td>{{s.count}}</td>
+          <td>Rs.{{s.revenue | number:'1.0-0'}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Bottom Row -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="section-header">
+        <h3>Low Stock Alerts</h3>
+        <a routerLink="/products" class="btn btn-ghost btn-sm">View All</a>
+      </div>
+      <div *ngIf="!kpi.low_stock_items?.length" class="empty-state" style="padding:20px 0;">
+        <p>No low stock items.</p>
+      </div>
+      <div *ngFor="let item of kpi.low_stock_items" class="alert-row">
+        <span>{{item.name}}</span>
+        <span class="badge badge-danger">{{item.stock_qty}} left</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-header">
+        <h3>Booked Appointments</h3>
+        <a routerLink="/appointments" class="btn btn-ghost btn-sm">View All</a>
+      </div>
+      <div *ngIf="!kpi.booked_appointments?.length" class="empty-state" style="padding:20px 0;">
+        <p>No booked appointments for today.</p>
+      </div>
+      <div *ngFor="let appt of kpi.booked_appointments" class="appt-row">
+        <div>
+          <strong>{{appt.client_name}}</strong>
+          <span class="muted"> · {{appt.service_name}}</span>
+        </div>
+        <span class="badge" [ngClass]="getStatusClass(appt.status)">{{appt.status}}</span>
+      </div>
+    </div>
+  </div>
+</ng-container>

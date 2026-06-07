@@ -1,0 +1,43 @@
+<div class="page-header">
+  <div><h1>Products & Inventory</h1><p>Manage stock and pricing</p></div>
+  <button class="btn btn-primary btn-sm" routerLink="/products/new">
+    <mat-icon style="font-size:15px;width:15px;height:15px;">add</mat-icon> Add Product
+  </button>
+</div>
+<div class="card">
+  <div class="toolbar">
+    <div class="search-box">
+      <mat-icon>search</mat-icon>
+      <input placeholder="Search products..." [(ngModel)]="search" (keyup.enter)="load()">
+    </div>
+    <label class="filter-toggle">
+      <input type="checkbox" [(ngModel)]="lowStockOnly" (change)="load()">
+      <span>Low stock only</span>
+    </label>
+    <button class="btn btn-secondary btn-sm" (click)="load()">Search</button>
+  </div>
+  <div *ngIf="loading" class="loading-overlay"><svg class="spinner" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="8" opacity="0.3"/><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/></svg></div>
+  <div *ngIf="!loading && !products.length" class="empty-state"><mat-icon>inventory_2</mat-icon><p>No products found</p></div>
+  <table *ngIf="!loading && products.length" class="data-table">
+    <thead><tr><th>Product</th><th>SKU</th><th>Cost Price</th><th>Retail Price</th><th>Stock</th><th>Actions</th></tr></thead>
+    <tbody>
+      <tr *ngFor="let p of products">
+        <td><strong>{{p.name}}</strong></td>
+        <td><code class="sku">{{p.sku || '—'}}</code></td>
+        <td>Rs.{{p.cost_price}}</td>
+        <td>Rs.{{p.retail_price}}</td>
+        <td>
+          <span class="badge" [class.badge-danger]="isLowStock(p)" [class.badge-success]="!isLowStock(p)">
+            {{p.stock_qty}} units
+          </span>
+        </td>
+        <td>
+          <div style="display:flex;gap:4px;">
+            <button class="btn btn-secondary btn-sm" [routerLink]="['/products', p.id, 'edit']">Edit</button>
+            <button class="btn btn-danger btn-sm" (click)="delete(p)"><mat-icon style="font-size:14px;width:14px;height:14px;">delete</mat-icon></button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
