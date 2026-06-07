@@ -1,2 +1,9 @@
-/saloon-backend.zip
-/saloon-frontend.zip
+.env
+venv/
+__pycache__/
+node_modules/
+dist/
+.angular/
+*.pyc
+*.log
+.DS_Store
